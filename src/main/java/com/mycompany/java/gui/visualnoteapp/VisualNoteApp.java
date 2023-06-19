@@ -8,30 +8,65 @@ package com.mycompany.java.gui.visualnoteapp;
  *
  * @author User
  */
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
 
-public class VisualNoteApp {
-    private JTextArea noteTextArea;
+import java.awt.BorderLayout;
+import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
+import javax.swing.ImageIcon;
+import java.awt.Image;
+import java.io.FileOutputStream;
+import java.nio.file.Files;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
+
+class VisualNote extends JFrame{
+    private JTextArea noteTextArea;    
+    private JMenuBar menuBar;
+    private JMenu fileMenu;
+    private JMenuItem newMenuItem;
+    private JMenuItem openMenuItem;
+    private JMenuItem saveMenuItem;
+    private JMenuItem saveAsMenuItem;
+    private JMenuItem exitMenuItem;
+    private JScrollPane scrollPane;
+    private JToolBar toolBar;    
+    private JButton newButton;
+    private JButton openButton;
+    private JButton saveButton;
+    private JPopupMenu popupMenu;
+    private JMenuItem cutMenuItem;
+    private JMenuItem copyMenuItem;
+    private JMenuItem pasteMenuItem;
+    private JPanel panel;
     private File currentFile;
-    
-    public VisualNoteApp() {
-        JFrame frame = new JFrame("VisualNote");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600, 400);
+    public VisualNote() {
+        setTitle("VisualNote");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(600, 400);
         
         noteTextArea = new JTextArea();
-        JScrollPane scrollPane = new JScrollPane(noteTextArea);
+        scrollPane = new JScrollPane(noteTextArea);
         
-        JMenuBar menuBar = new JMenuBar();
-        JMenu fileMenu = new JMenu("File");
-        JMenuItem newMenuItem = new JMenuItem("New");
-        JMenuItem openMenuItem = new JMenuItem("Open");
-        JMenuItem saveMenuItem = new JMenuItem("Save");
-        JMenuItem saveAsMenuItem = new JMenuItem("Save As");
-        JMenuItem exitMenuItem = new JMenuItem("Exit");
+        menuBar = new JMenuBar();
+        fileMenu = new JMenu("File");
+        newMenuItem = new JMenuItem("New");
+        openMenuItem = new JMenuItem("Open");
+        saveMenuItem = new JMenuItem("Save");
+        saveAsMenuItem = new JMenuItem("Save As");
+        exitMenuItem = new JMenuItem("Exit");
         
         fileMenu.add(newMenuItem);
         fileMenu.add(openMenuItem);
@@ -41,24 +76,33 @@ public class VisualNoteApp {
         fileMenu.add(exitMenuItem);
         menuBar.add(fileMenu);
         
-        JToolBar toolBar = new JToolBar();
-        JButton newButton = new JButton(new ImageIcon("new.png"));
-        JButton openButton = new JButton(new ImageIcon("open.png"));
-        JButton saveButton = new JButton(new ImageIcon("save.png"));
+        toolBar = new JToolBar();
         
-        toolBar.add(newButton);
-        toolBar.add(openButton);
-        toolBar.add(saveButton);
+        newButton = new JButton(resizeIcon("image/newfileicon.png", 20, 20));
+        openButton = new JButton(resizeIcon("image/openfileicon.png",20, 20));
+        saveButton = new JButton(resizeIcon("image/savefileicon.png",20,20));
+
+        panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+        panel.add(newButton);
+        panel.add(openButton);
+        panel.add(saveButton);
+        toolBar.add(panel);
+
         
-        JPopupMenu popupMenu = new JPopupMenu();
-        JMenuItem cutMenuItem = new JMenuItem("Cut");
-        JMenuItem copyMenuItem = new JMenuItem("Copy");
-        JMenuItem pasteMenuItem = new JMenuItem("Paste");
+        popupMenu = new JPopupMenu();
+        cutMenuItem = new JMenuItem("Cut");
+        copyMenuItem = new JMenuItem("Copy");
+        pasteMenuItem = new JMenuItem("Paste");
         popupMenu.add(cutMenuItem);
         popupMenu.add(copyMenuItem);
         popupMenu.add(pasteMenuItem);
         
-        noteTextArea.setComponentPopupMenu(popupMenu);
+        noteTextArea.setComponentPopupMenu(popupMenu);        
+        
+        setJMenuBar(menuBar);
+        getContentPane().add(toolBar, BorderLayout.PAGE_START);
+        getContentPane().add(scrollPane, BorderLayout.CENTER);
         
         newMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -107,14 +151,16 @@ public class VisualNoteApp {
                 saveNote();
             }
         });
-        
-        frame.setJMenuBar(menuBar);
-        frame.getContentPane().add(toolBar, BorderLayout.PAGE_START);
-        frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
-        
-        frame.setVisible(true);
+        setVisible(true);
     }
     
+    public ImageIcon resizeIcon(String imagePath, int width, int height) {
+        ImageIcon icon = new ImageIcon(getClass().getResource(imagePath));
+        Image img = icon.getImage();
+        Image resizedImage = img.getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH);
+        return new ImageIcon(resizedImage);
+    }
+
     private void createNewNote() {
         noteTextArea.setText("");
         currentFile = null;
@@ -125,24 +171,27 @@ public class VisualNoteApp {
         int option = fileChooser.showOpenDialog(null);
         if (option == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
-            try (BufferedReader reader = new BufferedReader(new FileReader(selectedFile))) {
-                StringBuilder content = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    content.append(line).append("\n");
+            try {
+                if (selectedFile == null) {
+                    throw new Exception("No file selected.");
                 }
-                noteTextArea.setText(content.toString());
+                byte[] bytes = Files.readAllBytes(selectedFile.toPath());
+                String content = new String(bytes);
+                noteTextArea.setText(content);
                 currentFile = selectedFile;
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Error opening the file.", "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
-    
+
     private void saveNote() {
         if (currentFile != null) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(currentFile))) {
-                writer.write(noteTextArea.getText());
+            try (FileOutputStream fos = new FileOutputStream(currentFile)) {
+                byte[] bytes = noteTextArea.getText().getBytes();
+                fos.write(bytes);
                 JOptionPane.showMessageDialog(null, "Note saved successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Error saving the file.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -151,27 +200,34 @@ public class VisualNoteApp {
             saveNoteAs();
         }
     }
-    
+
     private void saveNoteAs() {
         JFileChooser fileChooser = new JFileChooser();
         int option = fileChooser.showSaveDialog(null);
         if (option == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(selectedFile))) {
-                writer.write(noteTextArea.getText());
-                currentFile = selectedFile;
-                JOptionPane.showMessageDialog(null, "Note saved successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(null, "Error saving the file.", "Error", JOptionPane.ERROR_MESSAGE);
+            try {
+                if (selectedFile == null) {
+                    throw new Exception("No file selected.");
+                }
+                try (FileOutputStream fos = new FileOutputStream(selectedFile)) {
+                    byte[] bytes = noteTextArea.getText().getBytes();
+                    fos.write(bytes);
+                    currentFile = selectedFile;
+                    JOptionPane.showMessageDialog(null, "Note saved successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(null, "Error saving the file.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
-    
+
+}
+
+public class VisualNoteApp extends VisualNote {
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new VisualNoteApp();
-            }
-        });
+        VisualNote NF = new VisualNote();
     }
 }
