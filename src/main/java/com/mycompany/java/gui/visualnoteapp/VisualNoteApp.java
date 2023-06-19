@@ -30,7 +30,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
-import javax.swing.SwingUtilities;
 
 class VisualNote extends JFrame{
     private JTextArea noteTextArea;    
@@ -46,6 +45,7 @@ class VisualNote extends JFrame{
     private JButton newButton;
     private JButton openButton;
     private JButton saveButton;
+    private JButton addButton;
     private JPopupMenu popupMenu;
     private JMenuItem cutMenuItem;
     private JMenuItem copyMenuItem;
@@ -55,7 +55,7 @@ class VisualNote extends JFrame{
     public VisualNote() {
         setTitle("VisualNote");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(600, 400);
+        setSize(1200, 800);
         
         noteTextArea = new JTextArea();
         scrollPane = new JScrollPane(noteTextArea);
@@ -81,6 +81,7 @@ class VisualNote extends JFrame{
         newButton = new JButton(resizeIcon("image/newfileicon.png", 20, 20));
         openButton = new JButton(resizeIcon("image/openfileicon.png",20, 20));
         saveButton = new JButton(resizeIcon("image/savefileicon.png",20,20));
+        //addButton = new JButton(resizeIcon("image/savefileicon.png",20,20));
 
         panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
