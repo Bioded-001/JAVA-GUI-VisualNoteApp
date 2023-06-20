@@ -10,6 +10,7 @@ package com.mycompany.java.gui.visualnoteapp;
  */
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +47,7 @@ class VisualNote extends JFrame{
     private JButton openButton;
     private JButton saveButton;
     private JButton addButton;
+    private JButton subButton;
     private JPopupMenu popupMenu;
     private JMenuItem cutMenuItem;
     private JMenuItem copyMenuItem;
@@ -81,16 +83,17 @@ class VisualNote extends JFrame{
         newButton = new JButton(resizeIcon("image/newfileicon.png", 20, 20));
         openButton = new JButton(resizeIcon("image/openfileicon.png",20, 20));
         saveButton = new JButton(resizeIcon("image/savefileicon.png",20,20));
-        //addButton = new JButton(resizeIcon("image/savefileicon.png",20,20));
+        subButton = new JButton(resizeIcon("image/icons8-subtract-button-50.png",20,20));
+        addButton = new JButton(resizeIcon("image/icons8-add-button-50.png",20,20));
 
         panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
         panel.add(newButton);
         panel.add(openButton);
         panel.add(saveButton);
+        panel.add(subButton);
         toolBar.add(panel);
-
-        
+ 
         popupMenu = new JPopupMenu();
         cutMenuItem = new JMenuItem("Cut");
         copyMenuItem = new JMenuItem("Copy");
@@ -99,12 +102,28 @@ class VisualNote extends JFrame{
         popupMenu.add(copyMenuItem);
         popupMenu.add(pasteMenuItem);
         
+        JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        southPanel.add(addButton);
+        
         noteTextArea.setComponentPopupMenu(popupMenu);        
         
         setJMenuBar(menuBar);
         getContentPane().add(toolBar, BorderLayout.PAGE_START);
         getContentPane().add(scrollPane, BorderLayout.CENTER);
+        getContentPane().add(southPanel, BorderLayout.SOUTH);
         
+        subButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
+        addButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                new VisualNote(noteTextArea.getText());
+            }
+        });
+
+
         newMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 createNewNote();
@@ -154,6 +173,11 @@ class VisualNote extends JFrame{
         });
         setVisible(true);
     }
+    public VisualNote(String text) {
+        this(); // Call the no-arg constructor to initialize the components
+        noteTextArea.setText(text); // Set the text of noteTextArea
+    }
+
     
     public ImageIcon resizeIcon(String imagePath, int width, int height) {
         ImageIcon icon = new ImageIcon(getClass().getResource(imagePath));
