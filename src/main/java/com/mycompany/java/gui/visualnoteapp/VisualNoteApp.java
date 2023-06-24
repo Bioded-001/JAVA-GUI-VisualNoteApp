@@ -15,11 +15,14 @@ package com.mycompany.java.gui.visualnoteapp;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.ImageIcon;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
