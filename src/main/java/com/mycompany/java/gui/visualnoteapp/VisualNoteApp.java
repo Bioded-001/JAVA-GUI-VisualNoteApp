@@ -118,13 +118,16 @@ class VisualNote extends JFrame{
         
         subButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                dispose();
+                boolean check = promptSaveBeforeExit();
+                if(check){
+                    dispose();
+                }
             }
         });
         
         addButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                new VisualNote(noteTextArea.getText());
+                new VisualNote();
             }
         });
 
@@ -154,7 +157,10 @@ class VisualNote extends JFrame{
         
         exitMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                System.exit(0);
+                boolean check = promptSaveBeforeExit();
+                if(check){
+                    dispose();
+                }
             }
         });
         
@@ -179,16 +185,15 @@ class VisualNote extends JFrame{
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                promptSaveBeforeExit();
+                boolean check = promptSaveBeforeExit();
+                if(check){
+                    dispose();
+                }
             }
         });
         setVisible(true);
     }
-    public VisualNote(String text) {
-        this(); // Call the no-arg constructor to initialize the components
-        noteTextArea.setText(text); // Set the text of noteTextArea
-    }
-
+    
     
     public ImageIcon resizeIcon(String imagePath, int width, int height) {
         ImageIcon icon = new ImageIcon(getClass().getResource(imagePath));
@@ -224,12 +229,12 @@ class VisualNote extends JFrame{
         }
     }
 
-    private void promptSaveBeforeExit() {
+    private boolean promptSaveBeforeExit() {
         String text = noteTextArea.getText();
         byte[] bytes = text.getBytes(StandardCharsets.UTF_8);
         String content = new String(bytes, StandardCharsets.UTF_8);
         if (content.isEmpty() && currentFile == null) {
-            System.exit(0);
+            dispose();
         } else {
             int option = JOptionPane.showConfirmDialog(this,
                     "Do you want to save your changes before exiting?",
@@ -239,18 +244,19 @@ class VisualNote extends JFrame{
                 case JOptionPane.YES_OPTION:
                     boolean save = saveNote();
                     if (save) {
-                        System.exit(0);
+                        return true;
                     }
                     break;
                 case JOptionPane.NO_OPTION:
-                    System.exit(0);
-                    break;
+                    return true;
                 case JOptionPane.CANCEL_OPTION:
+                    return false;
                 case JOptionPane.CLOSED_OPTION:
                     this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-                    break;
+                    return false;
             }
         }
+        return false;
     }
 
     
