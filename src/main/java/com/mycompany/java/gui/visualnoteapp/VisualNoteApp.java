@@ -1,8 +1,10 @@
+package com.mycompany.java.gui.visualnoteapp;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.java.gui.visualnoteapp;
+
 
 /**
  *
@@ -17,6 +19,7 @@ import java.io.IOException;
 import javax.swing.ImageIcon;
 import java.awt.Image;
 import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -60,6 +63,7 @@ class VisualNote extends JFrame{
         setSize(1200, 800);
         
         noteTextArea = new JTextArea();
+        noteTextArea.setText(new String("".getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
         scrollPane = new JScrollPane(noteTextArea);
         
         menuBar = new JMenuBar();
@@ -117,12 +121,12 @@ class VisualNote extends JFrame{
                 dispose();
             }
         });
+        
         addButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 new VisualNote(noteTextArea.getText());
             }
         });
-
 
         newMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -171,6 +175,13 @@ class VisualNote extends JFrame{
                 saveNote();
             }
         });
+        
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                promptSaveBeforeExit();
+            }
+        });
         setVisible(true);
     }
     public VisualNote(String text) {
@@ -187,9 +198,61 @@ class VisualNote extends JFrame{
     }
 
     private void createNewNote() {
-        noteTextArea.setText("");
-        currentFile = null;
+        String text = noteTextArea.getText();
+        byte[] bytes = text.getBytes(StandardCharsets.UTF_8);
+        String content = new String(bytes, StandardCharsets.UTF_8);
+        if (content.isEmpty() && currentFile == null) {
+            noteTextArea.setText(new String("".getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
+        } else {
+            int option = JOptionPane.showConfirmDialog(this,
+                    "Do you want to save the current note before creating a new one?",
+                    "Save current note?",
+                    JOptionPane.YES_NO_OPTION);
+            switch (option) {
+                case JOptionPane.YES_OPTION:
+                    boolean save = saveNote();
+                    if (save) {
+                        noteTextArea.setText(new String("".getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
+                        currentFile = null;
+                    }
+                    break;
+                case JOptionPane.NO_OPTION:
+                    break;
+                case JOptionPane.CLOSED_OPTION:
+                    break;
+            }
+        }
     }
+
+    private void promptSaveBeforeExit() {
+        String text = noteTextArea.getText();
+        byte[] bytes = text.getBytes(StandardCharsets.UTF_8);
+        String content = new String(bytes, StandardCharsets.UTF_8);
+        if (content.isEmpty() && currentFile == null) {
+            System.exit(0);
+        } else {
+            int option = JOptionPane.showConfirmDialog(this,
+                    "Do you want to save your changes before exiting?",
+                    "Save changes?",
+                    JOptionPane.YES_NO_CANCEL_OPTION);
+            switch (option) {
+                case JOptionPane.YES_OPTION:
+                    boolean save = saveNote();
+                    if (save) {
+                        System.exit(0);
+                    }
+                    break;
+                case JOptionPane.NO_OPTION:
+                    System.exit(0);
+                    break;
+                case JOptionPane.CANCEL_OPTION:
+                case JOptionPane.CLOSED_OPTION:
+                    this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                    break;
+            }
+        }
+    }
+
     
     private void openNote() {
         JFileChooser fileChooser = new JFileChooser();
@@ -201,7 +264,7 @@ class VisualNote extends JFrame{
                     throw new Exception("No file selected.");
                 }
                 byte[] bytes = Files.readAllBytes(selectedFile.toPath());
-                String content = new String(bytes);
+                String content = new String(bytes, StandardCharsets.UTF_8);
                 noteTextArea.setText(content);
                 currentFile = selectedFile;
             } catch (IOException e) {
@@ -212,21 +275,23 @@ class VisualNote extends JFrame{
         }
     }
 
-    private void saveNote() {
+    private boolean saveNote() {
         if (currentFile != null) {
             try (FileOutputStream fos = new FileOutputStream(currentFile)) {
-                byte[] bytes = noteTextArea.getText().getBytes();
+                byte[] bytes = noteTextArea.getText().getBytes(StandardCharsets.UTF_8);
                 fos.write(bytes);
                 JOptionPane.showMessageDialog(null, "Note saved successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                return true;
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Error saving the file.", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
             }
         } else {
-            saveNoteAs();
+            return saveNoteAs();
         }
     }
 
-    private void saveNoteAs() {
+    private boolean saveNoteAs() {
         JFileChooser fileChooser = new JFileChooser();
         int option = fileChooser.showSaveDialog(null);
         if (option == JFileChooser.APPROVE_OPTION) {
@@ -236,16 +301,21 @@ class VisualNote extends JFrame{
                     throw new Exception("No file selected.");
                 }
                 try (FileOutputStream fos = new FileOutputStream(selectedFile)) {
-                    byte[] bytes = noteTextArea.getText().getBytes();
+                    byte[] bytes = noteTextArea.getText().getBytes(StandardCharsets.UTF_8);
                     fos.write(bytes);
                     currentFile = selectedFile;
                     JOptionPane.showMessageDialog(null, "Note saved successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    return true;
                 } catch (IOException e) {
                     JOptionPane.showMessageDialog(null, "Error saving the file.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return false;
                 }
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
             }
+        } else {
+            return false;
         }
     }
 
