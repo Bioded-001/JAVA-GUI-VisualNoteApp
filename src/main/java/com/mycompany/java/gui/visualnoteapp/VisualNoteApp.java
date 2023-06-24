@@ -250,6 +250,7 @@ class VisualNote extends JFrame{
                 case JOptionPane.NO_OPTION:
                     return true;
                 case JOptionPane.CANCEL_OPTION:
+                    this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                     return false;
                 case JOptionPane.CLOSED_OPTION:
                     this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
