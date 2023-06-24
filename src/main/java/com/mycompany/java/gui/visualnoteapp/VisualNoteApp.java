@@ -6,10 +6,12 @@ package com.mycompany.java.gui.visualnoteapp;
  */
 
 
-/**
- *
- * @author User
- */
+//
+//
+//
+//
+//
+//
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
