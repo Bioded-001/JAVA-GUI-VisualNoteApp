@@ -6,14 +6,14 @@ package com.mycompany.java.gui.visualnoteapp;
  */
 
 
-//Title : MyNotes
-//Name:Ooi Jing Hao
-//ID  :1211202433
-//Name:Lee Way Sean
-//ID  :1211203818
-//Name:Zachary Tristan Gary
-//ID  :1211203508
-
+/*
+ * Group No: 17
+ * Title: MyNotes
+ * Group Members:
+ * 1. Ooi Jing Hao, ID: 1211202433
+ * 2. Lee Way Sean, ID: 1211203818
+ * 3. Zachary Tristan Gary, ID: 1211203508
+ */
 // import necessary packages and classes
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
