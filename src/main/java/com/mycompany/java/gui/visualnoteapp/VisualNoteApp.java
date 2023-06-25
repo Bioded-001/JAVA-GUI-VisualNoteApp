@@ -5,10 +5,14 @@ package com.mycompany.java.gui.visualnoteapp;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 
-/**
- *
- * @author User
- */
+
+//Title : MyNotes
+//Name:Ooi Jing Hao
+//ID  :1211202433
+//Name:Lee Way Sean
+//ID  :1211203818
+//Name:Zachary Tristan Gary
+//ID  :1211203508
 
 // import necessary packages and classes
 import java.awt.BorderLayout;
