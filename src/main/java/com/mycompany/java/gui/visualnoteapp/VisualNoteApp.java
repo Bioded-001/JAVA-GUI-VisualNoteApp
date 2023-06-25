@@ -15,6 +15,8 @@ package com.mycompany.java.gui.visualnoteapp;
  * 3. Zachary Tristan Gary, ID: 1211203508
  */
 // import necessary packages and classes
+import java.awt.Font;
+import java.awt.Color;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.io.File;
@@ -66,6 +68,8 @@ class VisualNote extends JFrame {
     private JMenuItem pasteMenuItem;
     private JPanel panel;
     private File currentFile;
+    private Font f1 = new Font("Times New Roman", Font.PLAIN, 12);
+    private Color c1 = Color.BLACK;
     // constructor for VisualNote
     public VisualNote() {
     // set window properties
@@ -76,8 +80,11 @@ class VisualNote extends JFrame {
 
         // JTextArea for writing and editing notes
         noteTextArea = new JTextArea();  // Initializes a new JTextArea for writing and editing notes
+        noteTextArea.setFont(f1);  // Sets the font of the JTextArea to Times New Roman, size 12
+        noteTextArea.setForeground(c1);  // Sets the color of the JTextArea to black
         noteTextArea.setText(new String("".getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));  // Sets the initial text in the JTextArea to an empty string
         scrollPane = new JScrollPane(noteTextArea);  // Adds the JTextArea to a JScrollPane to allow for scrolling when the text exceeds the size of the JTextArea
+
 
         // Menu bar and file menu initialization
         menuBar = new JMenuBar();  // Initializes a new JMenuBar
@@ -233,6 +240,8 @@ class VisualNote extends JFrame {
         String content = new String(bytes, StandardCharsets.UTF_8);
         if (content.isEmpty() && currentFile == null) {
             noteTextArea.setText(new String("".getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
+            noteTextArea.setFont(f1);  // Sets the font of the JTextArea
+        noteTextArea.setForeground(c1);  // Sets the color of the JTextArea
         } else {
             int option = JOptionPane.showConfirmDialog(this,
                     "Do you want to save the current note before creating a new one?",
@@ -243,6 +252,8 @@ class VisualNote extends JFrame {
                     boolean save = saveNote();
                     if (save) {
                         noteTextArea.setText(new String("".getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
+                        noteTextArea.setFont(f1);  // Sets the font of the JTextArea
+                        noteTextArea.setForeground(c1);  // Sets the color of the JTextArea
                         currentFile = null;
                     }
                     break;
@@ -299,6 +310,8 @@ class VisualNote extends JFrame {
                 byte[] bytes = Files.readAllBytes(selectedFile.toPath());
                 String content = new String(bytes, StandardCharsets.UTF_8);
                 noteTextArea.setText(content);
+                noteTextArea.setFont(f1);  // Sets the font of the JTextArea
+                noteTextArea.setForeground(c1);  // Sets the color of the JTextArea
                 currentFile = selectedFile;
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Error opening the file.", "Error", JOptionPane.ERROR_MESSAGE);
