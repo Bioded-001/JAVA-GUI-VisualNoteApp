@@ -5,13 +5,10 @@ package com.mycompany.java.gui.visualnoteapp;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 
-
-//
-//
-//
-//
-//
-//
+/**
+ *
+ * @author User
+ */
 
 // import necessary packages and classes
 import java.awt.BorderLayout;
